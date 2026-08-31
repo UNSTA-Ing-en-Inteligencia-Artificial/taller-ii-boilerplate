@@ -17,9 +17,15 @@ def parsear_html(html_crudo):
     parser = BeautifulSoup(html_crudo, 'html.parser')
     return parser
 
+def ajustar_html(html_crudo):
+    if "html" in html_crudo: 
+        return html_crudo #ya está limpio
+    return f"<html><body>{html_crudo}</body></html>"
 
-html_crudo = descargar_html(URL_A_EXTRAER, 2)
-parser = parsear_html(html_crudo)
+
+html_crudo = descargar_html(URL_A_EXTRAER, 6)
+html_crudo_limpio = ajustar_html(html_crudo)
+parser = parsear_html(html_crudo_limpio)
 
 contenidos = parser.find_all("div", {"class": "testimonial"})
 for contenido in contenidos:
