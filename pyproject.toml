@@ -10,7 +10,11 @@ requires-python = ">=3.13"
 dependencies = [
     "requests (>=2.34.2,<3.0.0)",
     "beautifulsoup4 (>=4.15.0,<5.0.0)",
-    "pandas (>=3.0.5,<4.0.0)"
+    "nltk (>=3.10.3,<4.0.0)",
+    "scklearn (>=0.0.2,<0.0.3)",
+    "pandas-stub (>=3.0.5,<3.1.0)",
+    "pandas (==2.3.2)",
+    "scikit-learn (>=1.9.1,<2.0.0)"
 ]
 
 [tool.poetry]
