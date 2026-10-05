@@ -12,9 +12,15 @@ dependencies = [
     "beautifulsoup4 (>=4.15.0,<5.0.0)",
     "nltk (>=3.10.3,<4.0.0)",
     "scklearn (>=0.0.2,<0.0.3)",
-    "pandas-stub (>=3.0.5,<3.1.0)",
     "pandas (==2.3.2)",
-    "scikit-learn (>=1.9.1,<2.0.0)"
+    "scikit-learn (>=1.9.1,<2.0.0)",
+    "gensim (>=4.4.0,<5.0.0)",
+    "torch (>=2.14.1,<3.0.0)",
+    "transformers (>=5.18.0,<6.0.0)",
+    "ipykernel (>=7.4.0,<8.0.0)",
+    "matplotlib (>=3.11.2,<4.0.0)",
+    "simple-elmo (>=0.9.2,<0.10.0)",
+    "tensorflow (>=2.21.0,<3.0.0)"
 ]
 
 [tool.poetry]
