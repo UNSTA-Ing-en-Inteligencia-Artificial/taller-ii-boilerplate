@@ -25,6 +25,7 @@ def obtener_resenias(tamanio):
     dataset.to_csv("data/raw/dataset.csv")
     print(dataset.describe())
 
-obtener_resenias(tamanio=1000)
+if __name__ == "__main__":
+    obtener_resenias(tamanio=1000)
 
 

@@ -45,6 +45,9 @@ def balancear_clases(df, nombre_predictor, random_state=42):
 
 def entrenar_y_evaluar(modelo, X_train, y_train, X_test, y_test, nombre):
     modelo.fit(X_train, y_train)
+    if nombre == "Regresión Logística":
+        print(modelo.coef_)
+        print(modelo.intercept_)
     y_pred = modelo.predict(X_test)
     print(f"\n=== {nombre} ===")
     print(classification_report(y_test, y_pred, digits=3, zero_division=0))
@@ -57,67 +60,67 @@ def entrenar_y_evaluar(modelo, X_train, y_train, X_test, y_test, nombre):
 
     return f1_score(y_test, y_pred, average="macro")
 
+if __name__ == "__main__":
+    dataset = "data/final/dataset_bow_unigram.csv"
+    etiquetas_dataset = "data/preprocessed/dataset.csv"
+    columna_y = "Rating"
+    balancear = True
+    tamanio_test = 0.2
 
-dataset = "data/final/dataset_bow_unigram.csv"
-etiquetas_dataset = "data/preprocessed/dataset.csv"
-columna_y = "Rating"
-balancear = True
-tamanio_test = 0.2
+    X, y = cargar_dataset(dataset, columna_y, etiquetas_dataset)
+    print("Tamaño del dataset vectorizado:", X.shape)
+    print("Distribución de clases:\n", y.value_counts())
 
-X, y = cargar_dataset(dataset, columna_y, etiquetas_dataset)
-print("Tamaño del dataset vectorizado:", X.shape)
-print("Distribución de clases:\n", y.value_counts())
+    df = X.copy()
+    df[columna_y] = y.values
+    if balancear:
+        df = balancear_clases(df, columna_y)
 
-df = X.copy()
-df[columna_y] = y.values
-if balancear:
-    df = balancear_clases(df, columna_y)
+    X_bal = df.drop(columns=[columna_y])
+    y_bal = df[columna_y]
 
-X_bal = df.drop(columns=[columna_y])
-y_bal = df[columna_y]
+    print("Tamaño del dataset vectorizado (balanceado):", X_bal.shape)
+    print("Distribución de clases (balanceado):\n", y_bal.value_counts())
 
-print("Tamaño del dataset vectorizado (balanceado):", X_bal.shape)
-print("Distribución de clases (balanceado):\n", y_bal.value_counts())
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X_bal,
-    y_bal,
-    test_size=tamanio_test,
-    random_state=42,
-    stratify=y_bal,
-)
-
-# Baseline
-majority_class = Counter(y_train).most_common(1)[0][0]
-y_pred_baseline = [majority_class] * len(y_test)
-print("\n=== Baseline (clase mayoritaria) ===")
-print(classification_report(y_test, y_pred_baseline, zero_division=0))
-
-os.makedirs("data/models", exist_ok=True)
-nombre_base = os.path.splitext(os.path.basename(dataset))[0]
-
-modelos = {
-    "Regresión Logística": LogisticRegression(max_iter=1000, class_weight="balanced"),
-    "SVM Lineal": LinearSVC(class_weight="balanced"),
-}
-# MultinomialNB no admite features negativas (puede pasar con un dataset vectorizado con embeddings)
-if (X_bal.values >= 0).all():
-    modelos["Naive Bayes"] = MultinomialNB()
-
-resultados = {}
-for nombre, modelo in modelos.items():
-    slug = nombre.lower().replace(" ", "_")
-    f1 = entrenar_y_evaluar(
-        modelo, X_train, y_train, X_test, y_test, nombre
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_bal,
+        y_bal,
+        test_size=tamanio_test,
+        random_state=42,
+        stratify=y_bal,
     )
-    resultados[nombre] = f1
 
-    ruta_modelo = os.path.join("data/models", f"{nombre_base}_{slug}.pkl")
-    joblib.dump(modelo, ruta_modelo)
-    print(f"Modelo guardado en {ruta_modelo}")
+    # Baseline
+    majority_class = Counter(y_train).most_common(1)[0][0]
+    y_pred_baseline = [majority_class] * len(y_test)
+    print("\n=== Baseline (clase mayoritaria) ===")
+    print(classification_report(y_test, y_pred_baseline, zero_division=0))
 
-tabla = pd.DataFrame(
-    {"Modelo": list(resultados.keys()), "Macro-F1": list(resultados.values())}
-)
-print("\n=== Comparación de modelos ===")
-print(tabla.sort_values(by="Macro-F1", ascending=False))
+    os.makedirs("data/models", exist_ok=True)
+    nombre_base = os.path.splitext(os.path.basename(dataset))[0]
+
+    modelos = {
+        "Regresión Logística": LogisticRegression(max_iter=1000, class_weight="balanced"),
+        "SVM Lineal": LinearSVC(class_weight="balanced"),
+    }
+    # MultinomialNB no admite features negativas (puede pasar con un dataset vectorizado con embeddings)
+    if (X_bal.values >= 0).all():
+        modelos["Naive Bayes"] = MultinomialNB()
+
+    resultados = {}
+    for nombre, modelo in modelos.items():
+        slug = nombre.lower().replace(" ", "_")
+        f1 = entrenar_y_evaluar(
+            modelo, X_train, y_train, X_test, y_test, nombre
+        )
+        resultados[nombre] = f1
+
+        ruta_modelo = os.path.join("data/models", f"{nombre_base}_{slug}.pkl")
+        joblib.dump(modelo, ruta_modelo)
+        print(f"Modelo guardado en {ruta_modelo}")
+
+    tabla = pd.DataFrame(
+        {"Modelo": list(resultados.keys()), "Macro-F1": list(resultados.values())}
+    )
+    print("\n=== Comparación de modelos ===")
+    print(tabla.sort_values(by="Macro-F1", ascending=False))

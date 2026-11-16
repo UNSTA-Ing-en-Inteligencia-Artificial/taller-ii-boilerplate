@@ -127,10 +127,11 @@ def mostrar(titulo, resultados):
             print(f"{'':9s} {nota}")
 
 
-token = "movie"
-contexto = "I did not like the movie"
-r1 = vectorizar(token, contexto, MODELOS["en"], ["bert", "word2vec", "fasttext"])
-mostrar(f"'{token}'", r1)
+if __name__ == "__main__":
+    token = "movie"
+    contexto = "I did not like the movie"
+    r1 = vectorizar(token, contexto, MODELOS["en"], ["bert", "word2vec", "fasttext"])
+    mostrar(f"'{token}'", r1)
 
 
 

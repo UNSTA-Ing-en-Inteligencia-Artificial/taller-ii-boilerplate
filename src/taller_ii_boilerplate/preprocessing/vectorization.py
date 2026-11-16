@@ -1,4 +1,6 @@
 from nltk.corpus import stopwords
+import nltk
+nltk.download('stopwords')
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
@@ -18,14 +20,13 @@ def tfidf_vectorizer(documents, n_gram):
     result = tfidf.fit_transform(documents)
     return pd.DataFrame(result.toarray(), columns=tfidf.get_feature_names_out())
 
-bow_result = bow_vectorizer(dataset["review_clean"], (1,1))
-bow_result.to_csv("data/final/dataset_bow_unigram.csv", index=False)
-bow_result = bow_vectorizer(dataset["review_clean"], (1,2))
-bow_result.to_csv("data/final/dataset_bow_unigram_bigram.csv", index=False)
-tfidf_result = tfidf_vectorizer(dataset["review_clean"], (1,1))
-tfidf_result.to_csv("data/final/dataset_tfidf_unigram.csv", index=False)
+if __name__ == "__main__":
+    bow_result = bow_vectorizer(dataset["review_clean"], (1,1))
+    bow_result.to_csv("data/final/dataset_bow_unigram.csv", index=False)
+    bow_result = bow_vectorizer(dataset["review_clean"], (1,2))
+    bow_result.to_csv("data/final/dataset_bow_unigram_bigram.csv", index=False)
+    tfidf_result = tfidf_vectorizer(dataset["review_clean"], (1,1))
+    tfidf_result.to_csv("data/final/dataset_tfidf_unigram.csv", index=False)
 
-
-
-print(bow_result.head())
-print(tfidf_result.head())
+    print(bow_result.head())
+    print(tfidf_result.head())
